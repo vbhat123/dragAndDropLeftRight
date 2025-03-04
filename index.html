@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag and Drop Left to Right</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: space-around;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            width: 45%;
+            border: 2px solid #ccc;
+            padding: 10px;
+            min-height: 200px;
+        }
+        .item {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            cursor: grab;
+        }
+        .item.dragging {
+            opacity: 0.5;
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div id="left-container" class="container">
+        <div class="item" draggable="true">Item 1</div>
+        <div class="item" draggable="true">Item 2</div>
+        <div class="item" draggable="true">Item 3</div>
+    </div>
+    <div id="right-container" class="container"></div>
+
+    <script>
+        // Get references to the containers
+        const leftContainer = document.getElementById('left-container');
+        const rightContainer = document.getElementById('right-container');
+
+        // Track the currently dragged item
+        let draggingItem = null;
+
+        // Add event listeners to all draggable items
+        document.querySelectorAll('.item').forEach(item => {
+            item.addEventListener('dragstart', handleDragStart);
+            item.addEventListener('dragend', handleDragEnd);
+        });
+
+        // Add event listeners to the containers
+        leftContainer.addEventListener('dragover', handleDragOver);
+        leftContainer.addEventListener('drop', handleDrop);
+        rightContainer.addEventListener('dragover', handleDragOver);
+        rightContainer.addEventListener('drop', handleDrop);
+
+        // Function to handle drag start
+        function handleDragStart(e) {
+            draggingItem = e.target;
+            e.target.classList.add('dragging');
+        }
+
+        // Function to handle drag end
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggingItem = null;
+        }
+
+        // Function to handle drag over
+        function handleDragOver(e) {
+            e.preventDefault(); // Allow dropping
+        }
+
+        // Function to handle drop
+        function handleDrop(e) {
+            e.preventDefault();
+            if (draggingItem) {
+                // Append the dragged item to the drop container
+                e.target.appendChild(draggingItem);
+            }
+        }
+    </script>
+</body>
+</html>
