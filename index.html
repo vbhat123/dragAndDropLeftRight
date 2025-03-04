@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drag and Drop Left to Right</title>
+    <title>Drag and Drop Between Lists (Insert in Middle)</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -37,7 +37,11 @@
         <div class="item" draggable="true">Item 2</div>
         <div class="item" draggable="true">Item 3</div>
     </div>
-    <div id="right-container" class="container"></div>
+    <div id="right-container" class="container">
+        <div class="item" draggable="true">Item A</div>
+        <div class="item" draggable="true">Item B</div>
+        <div class="item" draggable="true">Item C</div>
+    </div>
 
     <script>
         // Get references to the containers
@@ -73,16 +77,35 @@
 
         // Function to handle drag over
         function handleDragOver(e) {
-            e.preventDefault(); // Allow dropping
+            e.preventDefault();
+            if (draggingItem) {
+                const afterElement = getDragAfterElement(e.currentTarget, e.clientY);
+                if (afterElement == null) {
+                    e.currentTarget.appendChild(draggingItem);
+                } else {
+                    e.currentTarget.insertBefore(draggingItem, afterElement);
+                }
+            }
         }
 
         // Function to handle drop
         function handleDrop(e) {
             e.preventDefault();
-            if (draggingItem) {
-                // Append the dragged item to the drop container
-                e.target.appendChild(draggingItem);
-            }
+        }
+
+        // Helper function to determine where to place the dragged element
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.item:not(.dragging)')];
+
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
         }
     </script>
 </body>
